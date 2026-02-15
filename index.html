@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventário Vinted - Martim</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>GESTÃO DE INVENTÁRIO</h1>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-boxes-stacked"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Stock Ativo</span>
+                    <span id="total-items" class="stat-value">0</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Investimento</span>
+                    <span id="total-investment" class="stat-value">0.00€</span>
+                </div>
+            </div>
+        </div>
+
+        <section id="form-section" class="card">
+            <div class="input-group">
+                <input type="text" id="item-name" placeholder="Nome da Peça (ex: Hoodie Nike)">
+                <input type="number" id="purchase-price" placeholder="Custo de Compra (€)" step="0.01">
+                <input type="text" id="item-image" placeholder="URL da Imagem da peça">
+            </div>
+            <button onclick="addItem()" class="btn-primary">Adicionar ao Inventário</button>
+        </section>
+
+        <section class="card">
+            <table id="inventory-table">
+                <thead>
+                    <tr>
+                        <th>Foto</th>
+                        <th>Item</th>
+                        <th>Custo</th>
+                        <th>Venda</th>
+                        <th>Lucro</th>
+                        <th>Estado</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="inventory-body">
+                    </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

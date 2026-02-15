@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventário Vinted - Martim</title>
+    <title>Inventário Vinted - Pro Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -20,11 +20,21 @@
                     <span id="total-items" class="stat-value">0</span>
                 </div>
             </div>
+            
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-wallet"></i></div>
                 <div class="stat-info">
                     <span class="stat-label">Investimento</span>
                     <span id="total-investment" class="stat-value">0.00€</span>
+                </div>
+            </div>
+
+            <div class="stat-card clickable" onclick="toggleRevenue()" title="Clique para alternar Lucro/Vendas">
+                <div class="stat-icon"><i id="revenue-icon" class="fas fa-chart-line"></i></div>
+                <div class="stat-info">
+                    <span id="revenue-label" class="stat-label">Lucro Total</span>
+                    <span id="total-revenue" class="stat-value">0.00€</span>
+                    <small class="toggle-hint">CLIQUE PARA ALTERNAR</small>
                 </div>
             </div>
         </div>
@@ -39,21 +49,22 @@
         </section>
 
         <section class="card">
-            <table id="inventory-table">
-                <thead>
-                    <tr>
-                        <th>Foto</th>
-                        <th>Item</th>
-                        <th>Custo</th>
-                        <th>Venda</th>
-                        <th>Lucro</th>
-                        <th>Estado</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="inventory-body">
-                    </tbody>
-            </table>
+            <div class="table-container">
+                <table id="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Item</th>
+                            <th>Custo</th>
+                            <th>Venda</th>
+                            <th>Lucro</th>
+                            <th>Estado</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-body"></tbody>
+                </table>
+            </div>
         </section>
     </div>
 

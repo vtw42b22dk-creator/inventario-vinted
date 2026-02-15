@@ -1,4 +1,5 @@
 let inventory = JSON.parse(localStorage.getItem('vintedStock')) || [];
+let showOnlyProfit = true; // Alternador global
 
 function saveAndRender() {
     localStorage.setItem('vintedStock', JSON.stringify(inventory));
@@ -11,18 +12,16 @@ function addItem() {
     let imgUrl = document.getElementById('item-image').value;
 
     if (!name || isNaN(cost)) {
-        alert("Preenche o Nome e o Custo!");
+        alert("Preenche os campos obrigatórios!");
         return;
     }
-
-    if (!imgUrl) imgUrl = 'https://via.placeholder.com/65?text=Item';
 
     const newItem = {
         id: Date.now(),
         name: name,
         cost: cost,
         salePrice: null,
-        img: imgUrl,
+        img: imgUrl || 'https://via.placeholder.com/65?text=Item',
         status: 'Disponível'
     };
 
@@ -30,47 +29,53 @@ function addItem() {
     document.getElementById('item-name').value = '';
     document.getElementById('purchase-price').value = '';
     document.getElementById('item-image').value = '';
-    
     saveAndRender();
 }
 
 function sellItem(id) {
-    const saleValue = prompt("Por quanto vendeste esta peça? (€)");
-    if (saleValue !== null && saleValue !== "" && !isNaN(saleValue)) {
-        const itemIndex = inventory.findIndex(i => i.id === id);
-        inventory[itemIndex].salePrice = parseFloat(saleValue);
-        inventory[itemIndex].status = 'Vendido';
+    const val = prompt("Preço de venda (€):");
+    if (val && !isNaN(val)) {
+        const idx = inventory.findIndex(i => i.id === id);
+        inventory[idx].salePrice = parseFloat(val);
+        inventory[idx].status = 'Vendido';
         saveAndRender();
     }
 }
 
-// Apaga logo sem confirmação
 function deleteItem(id) {
     inventory = inventory.filter(i => i.id !== id);
     saveAndRender();
+}
+
+function toggleRevenue() {
+    showOnlyProfit = !showOnlyProfit;
+    renderTable();
 }
 
 function renderTable() {
     const tbody = document.getElementById('inventory-body');
     tbody.innerHTML = '';
 
-    let activeStockCount = 0;
-    let totalInvestment = 0;
+    let activeCount = 0;
+    let totalInvest = 0;
+    let totalProfit = 0;
+    let totalSales = 0;
 
     inventory.forEach(item => {
         if (item.status === 'Disponível') {
-            activeStockCount++;
-            totalInvestment += item.cost;
+            activeCount++;
+            totalInvest += item.cost;
         }
 
-        let saleHtml = '-';
-        let profitHtml = '-';
-        
+        let saleTxt = '-';
+        let profitTxt = '-';
+
         if (item.status === 'Vendido') {
-            const profit = item.salePrice - item.cost;
-            const profitColor = profit >= 0 ? 'var(--success)' : 'var(--danger)';
-            saleHtml = `${item.salePrice.toFixed(2)}€`;
-            profitHtml = `<span style="color: ${profitColor}; font-weight: bold;">${profit.toFixed(2)}€</span>`;
+            const p = item.salePrice - item.cost;
+            totalProfit += p;
+            totalSales += item.salePrice;
+            saleTxt = `${item.salePrice.toFixed(2)}€`;
+            profitTxt = `<span style="color:${p>=0?'var(--success)':'var(--danger)'}">${p.toFixed(2)}€</span>`;
         }
 
         const tr = document.createElement('tr');
@@ -78,19 +83,34 @@ function renderTable() {
             <td><img src="${item.img}" class="img-preview"></td>
             <td><strong>${item.name}</strong></td>
             <td>${item.cost.toFixed(2)}€</td>
-            <td>${saleHtml}</td>
-            <td>${profitHtml}</td>
-            <td><span class="badge ${item.status === 'Vendido' ? 'sold' : 'available'}">${item.status}</span></td>
+            <td>${saleTxt}</td>
+            <td>${profitTxt}</td>
+            <td><span class="badge ${item.status==='Vendido'?'sold':'available'}">${item.status}</span></td>
             <td>
-                ${item.status === 'Disponível' ? `<button onclick="sellItem(${item.id})" class="btn-sell">Vender</button>` : ''}
+                ${item.status==='Disponível'?`<button onclick="sellItem(${item.id})" class="btn-sell">Vender</button>`:''}
                 <button onclick="deleteItem(${item.id})" class="btn-delete">Apagar</button>
             </td>
         `;
         tbody.appendChild(tr);
     });
 
-    document.getElementById('total-items').innerText = activeStockCount;
-    document.getElementById('total-investment').innerText = totalInvestment.toFixed(2) + '€';
+    // Atualizar Dashboard
+    document.getElementById('total-items').innerText = activeCount;
+    document.getElementById('total-investment').innerText = totalInvest.toFixed(2) + '€';
+
+    const revLabel = document.getElementById('revenue-label');
+    const revVal = document.getElementById('total-revenue');
+    const revIcon = document.getElementById('revenue-icon');
+
+    if (showOnlyProfit) {
+        revLabel.innerText = "Lucro Total";
+        revVal.innerText = totalProfit.toFixed(2) + '€';
+        revIcon.className = "fas fa-chart-line";
+    } else {
+        revLabel.innerText = "Vendas Totais";
+        revVal.innerText = totalSales.toFixed(2) + '€';
+        revIcon.className = "fas fa-hand-holding-dollar";
+    }
 }
 
 renderTable();

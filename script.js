@@ -55,17 +55,16 @@ function toggleRevenue() {
 function renderTable() {
     const tbody = document.getElementById('inventory-body');
     tbody.innerHTML = '';
-
-    let activeCount = 0;
-    let totalInvest = 0;
-    let totalProfit = 0;
-    let totalSales = 0;
+    
+    let totalItemsCount = 0;    // Mudamos para contar TODAS as peças do inventário
+    let totalInvested = 0;     // Custo total de TUDO o que compraste
+    let totalProfit = 0;       // Soma dos lucros
+    let totalSalesValue = 0;   // Soma bruta das vendas
 
     inventory.forEach(item => {
-        if (item.status === 'Disponível') {
-            activeCount++;
-            totalInvest += item.cost;
-        }
+        // Agora contamos a peça e o custo dela, independentemente de estar vendida ou não
+        totalItemsCount++; 
+        totalInvested += item.cost;
 
         let saleTxt = '-';
         let profitTxt = '-';
@@ -73,9 +72,9 @@ function renderTable() {
         if (item.status === 'Vendido') {
             const p = item.salePrice - item.cost;
             totalProfit += p;
-            totalSales += item.salePrice;
+            totalSalesValue += item.salePrice;
             saleTxt = `${item.salePrice.toFixed(2)}€`;
-            profitTxt = `<span style="color:${p>=0?'var(--success)':'var(--danger)'}">${p.toFixed(2)}€</span>`;
+            profitTxt = `<span style="color:${p>=0?'#2ed573':'#ff4757'}">${p.toFixed(2)}€</span>`;
         }
 
         const tr = document.createElement('tr');
@@ -89,28 +88,22 @@ function renderTable() {
             <td>
                 ${item.status==='Disponível'?`<button onclick="sellItem(${item.id})" class="btn-sell">Vender</button>`:''}
                 <button onclick="deleteItem(${item.id})" class="btn-delete">Apagar</button>
-            </td>
-        `;
+            </td>`;
         tbody.appendChild(tr);
     });
 
-    // Atualizar Dashboard
-    document.getElementById('total-items').innerText = activeCount;
-    document.getElementById('total-investment').innerText = totalInvest.toFixed(2) + '€';
-
-    const revLabel = document.getElementById('revenue-label');
+    // Atualiza os cards no topo
+    document.getElementById('total-items').innerText = totalItemsCount;
+    document.getElementById('total-investment').innerText = totalInvested.toFixed(2) + '€';
+    
     const revVal = document.getElementById('total-revenue');
-    const revIcon = document.getElementById('revenue-icon');
-
+    const revLabel = document.getElementById('revenue-label');
+    
     if (showOnlyProfit) {
         revLabel.innerText = "Lucro Total";
         revVal.innerText = totalProfit.toFixed(2) + '€';
-        revIcon.className = "fas fa-chart-line";
     } else {
-        revLabel.innerText = "Vendas Totais";
-        revVal.innerText = totalSales.toFixed(2) + '€';
-        revIcon.className = "fas fa-hand-holding-dollar";
+        revLabel.innerText = "Faturamento Bruto";
+        revVal.innerText = totalSalesValue.toFixed(2) + '€';
     }
 }
-
-renderTable();
